@@ -90,6 +90,7 @@ Patch127: bash-4.4-no-loadable-builtins.patch
 # This option is undocumented in upstream and is documented by this patch
 Patch128: bash-5.0-syslog-history.patch
 Patch129: bash-configure-c99.patch
+Patch130: bash-configure-c99-2.patch
 
 BuildRequires:  gcc
 BuildRequires: texinfo bison
