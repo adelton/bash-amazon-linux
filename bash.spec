@@ -6,7 +6,7 @@
 Version: %{baseversion}.%{patchlevel}
 Name: bash
 Summary: The GNU Bourne Again shell
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL-3.0-or-later
 Url: https://www.gnu.org/software/bash
 Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
@@ -327,6 +327,9 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Jul 17 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.26-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
 * Fri Feb 09 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.26-3
 - Update patch for audit logs
   Resolves: RHEL-22619
