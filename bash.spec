@@ -1,12 +1,12 @@
 #% define beta_tag rc2
-%define patchlevel 26
+%define patchlevel 32
 %define baseversion 5.2
 %bcond_without tests
 
 Version: %{baseversion}.%{patchlevel}
 Name: bash
 Summary: The GNU Bourne Again shell
-Release: 4%{?dist}
+Release: 1%{?dist}
 License: GPL-3.0-or-later
 Url: https://www.gnu.org/software/bash
 Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
@@ -327,6 +327,10 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Aug 12 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.32-1
+- Update to bash-5.2 patchlevel 32
+  Resolves: #2302528
+
 * Wed Jul 17 2024 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.26-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 

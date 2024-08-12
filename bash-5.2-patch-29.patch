@@ -1,0 +1,87 @@
+diff --git a/parse.y b/parse.y
+--- a/parse.y
++++ b/parse.y
+@@ -6470,10 +6470,15 @@ parse_string_to_word_list (s, flags, whom)
+   if (wl == &parse_string_error)
+     {
+       set_exit_status (EXECUTION_FAILURE);
++      current_token = '\n';	/* XXX */
+       if (interactive_shell == 0 && posixly_correct)
+ 	jump_to_top_level (FORCE_EOF);
+       else
+-	jump_to_top_level (DISCARD);
++	{
++	  if (executing && parse_and_execute_level == 0)
++	    top_level_cleanup ();
++	  jump_to_top_level (DISCARD);
++	}
+     }
+ 
+   return (REVERSE_LIST (wl, WORD_LIST *));
+@@ -6537,11 +6542,15 @@ parse_compound_assignment (retlenp)
+   if (wl == &parse_string_error)
+     {
+       set_exit_status (EXECUTION_FAILURE);
+-      last_read_token = '\n';	/* XXX */
++      last_read_token = current_token = '\n';	/* XXX */
+       if (interactive_shell == 0 && posixly_correct)
+ 	jump_to_top_level (FORCE_EOF);
+       else
+-	jump_to_top_level (DISCARD);
++	{
++	  if (executing && parse_and_execute_level == 0)
++	    top_level_cleanup ();
++	  jump_to_top_level (DISCARD);
++	}
+     }
+ 
+   if (wl)
+diff --git a/patchlevel.h b/patchlevel.h
+--- a/patchlevel.h
++++ b/patchlevel.h
+@@ -25,6 +25,6 @@
+    regexp `^#define[ 	]*PATCHLEVEL', since that's what support/mkversion.sh
+    looks for to find the patch level (for the sccs version string). */
+ 
+-#define PATCHLEVEL 28
++#define PATCHLEVEL 29
+ 
+ #endif /* _PATCHLEVEL_H_ */
+diff --git a/y.tab.c b/y.tab.c
+--- a/y.tab.c
++++ b/y.tab.c
+@@ -8785,10 +8785,15 @@ parse_string_to_word_list (s, flags, whom)
+   if (wl == &parse_string_error)
+     {
+       set_exit_status (EXECUTION_FAILURE);
++      current_token = '\n';	/* XXX */
+       if (interactive_shell == 0 && posixly_correct)
+ 	jump_to_top_level (FORCE_EOF);
+       else
+-	jump_to_top_level (DISCARD);
++	{
++	  if (executing && parse_and_execute_level == 0)
++	    top_level_cleanup ();
++	  jump_to_top_level (DISCARD);
++	}
+     }
+ 
+   return (REVERSE_LIST (wl, WORD_LIST *));
+@@ -8852,11 +8857,15 @@ parse_compound_assignment (retlenp)
+   if (wl == &parse_string_error)
+     {
+       set_exit_status (EXECUTION_FAILURE);
+-      last_read_token = '\n';	/* XXX */
++      last_read_token = current_token = '\n';	/* XXX */
+       if (interactive_shell == 0 && posixly_correct)
+ 	jump_to_top_level (FORCE_EOF);
+       else
+-	jump_to_top_level (DISCARD);
++	{
++	  if (executing && parse_and_execute_level == 0)
++	    top_level_cleanup ();
++	  jump_to_top_level (DISCARD);
++	}
+     }
+ 
+   if (wl)
