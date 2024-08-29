@@ -6,7 +6,7 @@
 Version: %{baseversion}.%{patchlevel}
 Name: bash
 Summary: The GNU Bourne Again shell
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL-3.0-or-later
 Url: https://www.gnu.org/software/bash
 Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
@@ -92,6 +92,9 @@ Patch130: bash-configure-c99-2.patch
 
 # Enable audit logs
 Patch131: bash-4.3-audit.patch
+
+# Fixes for issues found by OpenScanHub
+Patch132: bash-5.3-sast.patch
 
 BuildRequires:  gcc
 BuildRequires: texinfo bison
@@ -327,6 +330,10 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Aug 29 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.32-2
+- Fix issues identified by OpenScanHub
+  Resolves: RHEL-44649
+
 * Mon Aug 12 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.32-1
 - Update to bash-5.2 patchlevel 32
   Resolves: #2302528
