@@ -131,7 +131,7 @@ rm y.tab.*
 
 %build
 # GCC 15 defaults to `-std=gnu23` which breaks compilation
-export CFLAGS+="-std=gnu17"
+### export CFLAGS+="-std=gnu17"
 
 autoconf
 %configure --with-bash-malloc=no --with-afs
@@ -323,6 +323,9 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Nov 17 2025 Jan Pazdziora
+- Revert the CFLAGS+="-std=gnu17" change for gcc-11.5.0-5.amzn2023.0.5.x86_64.
+
 * Wed Jul 23 2025 Fedora Release Engineering <releng@fedoraproject.org> - 5.3.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_43_Mass_Rebuild
 
