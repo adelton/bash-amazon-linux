@@ -1,8 +1,8 @@
 diff --git a/execute_cmd.c b/execute_cmd.c
-index a988400..412128c 100644
+index 87bed5a..5c675d3 100644
 --- a/execute_cmd.c
 +++ b/execute_cmd.c
-@@ -5760,7 +5760,7 @@ shell_execve (command, args, env)
+@@ -6225,7 +6225,7 @@ shell_execve (char *command, char **args, char **env)
  		  Elf32_Ehdr ehdr;
  		  Elf32_Phdr *phdr;
                    Elf32_Shdr *shdr;
@@ -11,7 +11,7 @@ index a988400..412128c 100644
  
  		  /* We have to copy the data since the sample buffer
  		     might not be aligned correctly to be accessed as
-@@ -5768,12 +5768,12 @@ shell_execve (command, args, env)
+@@ -6233,12 +6233,12 @@ shell_execve (char *command, char **args, char **env)
  		  memcpy (&ehdr, sample, sizeof (Elf32_Ehdr));
  
  		  nshdr = ehdr.e_shnum;
@@ -26,7 +26,7 @@ index a988400..412128c 100644
  					  ehdr.e_shoff);
  #else
  		      if (lseek (fd, ehdr.e_shoff, SEEK_SET) != -1)
-@@ -5815,11 +5815,11 @@ shell_execve (command, args, env)
+@@ -6280,11 +6280,11 @@ shell_execve (char *command, char **args, char **env)
  		    }
  
  		  nphdr = ehdr.e_phnum;
@@ -40,7 +40,7 @@ index a988400..412128c 100644
  					  ehdr.e_phoff);
  #else
  		      if (lseek (fd, ehdr.e_phoff, SEEK_SET) != -1)
-@@ -5844,7 +5844,7 @@ shell_execve (command, args, env)
+@@ -6309,7 +6309,7 @@ shell_execve (char *command, char **args, char **env)
  		  Elf64_Ehdr ehdr;
  		  Elf64_Phdr *phdr;
                    Elf64_Shdr *shdr;
@@ -49,7 +49,7 @@ index a988400..412128c 100644
  
  		  /* We have to copy the data since the sample buffer
  		     might not be aligned correctly to be accessed as
-@@ -5852,11 +5852,11 @@ shell_execve (command, args, env)
+@@ -6317,11 +6317,11 @@ shell_execve (char *command, char **args, char **env)
  		  memcpy (&ehdr, sample, sizeof (Elf64_Ehdr));
  
  		  nshdr = ehdr.e_shnum;
@@ -63,7 +63,7 @@ index a988400..412128c 100644
  					  ehdr.e_shoff);
  #else
  		      if (lseek (fd, ehdr.e_shoff, SEEK_SET) != -1)
-@@ -5898,11 +5898,11 @@ shell_execve (command, args, env)
+@@ -6363,11 +6363,11 @@ shell_execve (char *command, char **args, char **env)
  		    }
  
  		  nphdr = ehdr.e_phnum;
@@ -77,7 +77,7 @@ index a988400..412128c 100644
  					  ehdr.e_phoff);
  #else
  		      if (lseek (fd, ehdr.e_phoff, SEEK_SET) != -1)
-@@ -5924,8 +5924,8 @@ shell_execve (command, args, env)
+@@ -6389,8 +6389,8 @@ shell_execve (char *command, char **args, char **env)
  
  	      if (offset != -1)
  		{
@@ -88,7 +88,7 @@ index a988400..412128c 100644
  		  char *interp = NULL;
  
  		  do
-@@ -5974,7 +5974,8 @@ shell_execve (command, args, env)
+@@ -6439,7 +6439,8 @@ shell_execve (char *command, char **args, char **env)
  	    }
  #endif
  #if defined (HAVE_HASH_BANG_EXEC) || defined (HAVE_ELF_H)
@@ -97,7 +97,4 @@ index a988400..412128c 100644
 +	    close (fd);
  #endif
  
-       errno = i;
--- 
-2.17.2
-
+ 	  if (i == ENOENT)
