@@ -8,3 +8,4 @@ RUN dnf builddep -y bash.spec
 RUN make -f .copr/Makefile srpm outdir=. spec=bash.spec
 RUN rpm -Uvh bash-*.src.rpm
 RUN rpmbuild -bb ~/rpmbuild/SPECS/bash.spec
+RUN bash --version && rpm -Fvh /root/rpmbuild/RPMS/*/*.rpm && bash --version
