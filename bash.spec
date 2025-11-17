@@ -1,12 +1,12 @@
 #% define beta_tag rc2
-%define patchlevel 32
+%define patchlevel 37
 %define baseversion 5.2
 %bcond_without tests
 
 Version: %{baseversion}.%{patchlevel}
 Name: bash
 Summary: The GNU Bourne Again shell
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL-3.0-or-later
 Url: https://www.gnu.org/software/bash
 Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
@@ -88,10 +88,12 @@ Patch127: bash-4.4-no-loadable-builtins.patch
 # This option is undocumented in upstream and is documented by this patch
 Patch128: bash-5.0-syslog-history.patch
 Patch129: bash-configure-c99.patch
-Patch130: bash-configure-c99-2.patch
 
 # Enable audit logs
 Patch131: bash-4.3-audit.patch
+
+# Fixes for issues found by OpenScanHub
+Patch132: bash-5.3-sast.patch
 
 BuildRequires:  gcc
 BuildRequires: texinfo bison
@@ -327,6 +329,17 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Jan 16 2025 Fedora Release Engineering <releng@fedoraproject.org> - 5.2.37-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Fri Nov 08 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.37-1
+- Update to bash-5.2 patchlevel 37
+  Resolves: #2314348
+
+* Thu Aug 29 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.32-2
+- Fix issues identified by OpenScanHub
+  Resolves: RHEL-44649
+
 * Mon Aug 12 2024 Siteshwar Vashisht <svashisht@redhat.com> - 5.2.32-1
 - Update to bash-5.2 patchlevel 32
   Resolves: #2302528
