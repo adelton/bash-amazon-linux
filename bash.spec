@@ -1,12 +1,12 @@
 #% define beta_tag rc2
-%define patchlevel 0
+%define patchlevel 9
 %define baseversion 5.3
 %bcond_without tests
 
 Version: %{baseversion}.%{patchlevel}
 Name: bash
 Summary: The GNU Bourne Again shell
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPL-3.0-or-later
 Url: https://www.gnu.org/software/bash
 Source0: https://ftp.gnu.org/gnu/bash/bash-%{baseversion}.tar.gz
@@ -23,9 +23,9 @@ Source5: chet-gpgkey.asc
 
 # Official upstream patches
 # Patches are converted to apply with '-p1'
-#{lua:for i=1,rpm.expand('%{patchlevel}') do
-#    print(string.format('Patch%u: bash-%s-patch-%u.patch\n', i, rpm.expand('%{baseversion}'), i))
-#end}
+%{lua:for i=1,rpm.expand('%{patchlevel}') do
+    print(string.format('Patch%u: bash-%s-patch-%u.patch\n', i, rpm.expand('%{baseversion}'), i))
+end}
 
 # Other patches
 # Non-interactive shells beginning with argv[0][0] == '-' should run the startup files when not in posix mode.
@@ -323,6 +323,15 @@ end
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Jan 16 2026 Fedora Release Engineering <releng@fedoraproject.org> - 5.3.9-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_44_Mass_Rebuild
+
+* Fri Jan 16 2026 Fedora Release Engineering <releng@fedoraproject.org> - 5.3.9-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_44_Mass_Rebuild
+
+* Mon Jan 05 2026 Siteshwar Vashisht <svashisht@redhat.com> - 5.3.9-1
+- Update to bash-5.3 patchlevel 9
+
 * Mon Nov 17 2025 Jan Pazdziora
 - Revert the CFLAGS+="-std=gnu17" change for gcc-11.5.0-5.amzn2023.0.5.x86_64.
 
