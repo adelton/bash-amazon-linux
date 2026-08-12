@@ -23,12 +23,13 @@ jobs:
       - run: printf '%s\n' "$LATEST_FEDORA_BRANCH"
       - run: |
           if git merge-base --is-ancestor "fedora-dist-git/$LATEST_FEDORA_BRANCH" "$GITHUB_REF" ; then
+            echo "::notice::No new commits found in Fedora dist-git $LATEST_FEDORA_BRANCH branch."
             exit 0
           fi
-          echo "New commits in Fedora dist-git $LATEST_FEDORA_BRANCH."
+          echo "::notice::New commits in Fedora dist-git $LATEST_FEDORA_BRANCH branch."
           git push origin "fedora-dist-git/$LATEST_FEDORA_BRANCH:refs/heads/$LATEST_FEDORA_BRANCH"
           if gh pr list -B "$GITHUB_REF_NAME" | tee /dev/stderr | grep -q . ; then
-            echo "There already is an unmerged pull request, resolve it first."
+            echo "::warning::There already is an unmerged pull request, resolve it first."
             exit 9
           fi
           MERGE_HEAD="$LATEST_FEDORA_BRANCH"
@@ -43,8 +44,8 @@ jobs:
           else
             BODY="We were not able to create a merge commit, you will need to merge manually."
           fi
-          gh pr create -B "$GITHUB_REF_NAME" -H "$MERGE_HEAD" --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body "$( printf '%s\n\n%s' "$BODY" "Created by $RUN_ID_URL")"
-          echo "Filed pull request, consider merging."
+          PR_URL="$( gh pr create -B "$GITHUB_REF_NAME" -H "$MERGE_HEAD" --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body "$( printf '%s\n\n%s' "$BODY" "Created by $RUN_ID_URL")" )"
+          echo "::notice::Filed pull request $PR_URL, consider merging."
         env:
           GITHUB_TOKEN: ${{ github.token }}
           RUN_ID_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
