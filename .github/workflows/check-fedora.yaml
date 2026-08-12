@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - run: git remote add fedora-dist-git https://src.fedoraproject.org/rpms/bash.git
       - run: git fetch fedora-dist-git
-      - run: git branch -r --list 'fedora-dist-git/f[1-9]*' | sed 's%^ *fedora-dist-git/f%%' | sort -rn | head | tee /dev/stderr | head -1 | head -1 | sed 's/^/LATEST_FEDORA_BRANCH=f/' >> $GITHUB_ENV
+      - run: git branch -r --list 'fedora-dist-git/f[1-9]*' | sed 's%^ *fedora-dist-git/f%%' | sort -rn | head | tee /dev/stderr | head -1 | sed 's/^/LATEST_FEDORA_BRANCH=f/' >> $GITHUB_ENV
       - run: echo $LATEST_FEDORA_BRANCH
       - run: |
           if ! git merge-base --is-ancestor fedora-dist-git/$LATEST_FEDORA_BRANCH ${{ github.ref }} ; then
