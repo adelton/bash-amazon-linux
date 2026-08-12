@@ -8,30 +8,30 @@ on:
 
 jobs:
   check-fedora:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - run: git remote add fedora-dist-git https://src.fedoraproject.org/rpms/bash.git
       - run: git fetch fedora-dist-git
-      - run: git branch -r --list 'fedora-dist-git/f[1-9]*' | sed 's%^ *fedora-dist-git/f%%' | sort -rn | head | tee /dev/stderr | head -1 | sed 's/^/LATEST_FEDORA_BRANCH=f/' >> $GITHUB_ENV
-      - run: echo $LATEST_FEDORA_BRANCH
+      - run: git branch -r --list 'fedora-dist-git/f[1-9]*' | sed 's%^ *fedora-dist-git/f%%' | sort -rn | head | tee /dev/stderr | head -1 | sed 's/^/LATEST_FEDORA_BRANCH=f/' >> "$GITHUB_ENV"
+      - run: printf '%s\n' "$LATEST_FEDORA_BRANCH"
       - run: |
-          if ! git merge-base --is-ancestor fedora-dist-git/$LATEST_FEDORA_BRANCH ${{ github.ref }} ; then
+          if ! git merge-base --is-ancestor "fedora-dist-git/$LATEST_FEDORA_BRANCH" "$GITHUB_REF" ; then
             echo "New commits in Fedora dist-git $LATEST_FEDORA_BRANCH."
-            if gh pr list -B $GITHUB_REF_NAME -H $LATEST_FEDORA_BRANCH | tee /dev/stderr | grep -q . ; then
+            if gh pr list -B "$GITHUB_REF_NAME" -H "$LATEST_FEDORA_BRANCH" | tee /dev/stderr | grep -q . ; then
               echo "There already seems a pull request dealing with these."
             else
-              git push origin fedora-dist-git/$LATEST_FEDORA_BRANCH:refs/heads/$LATEST_FEDORA_BRANCH
-              gh pr create -B $GITHUB_REF_NAME -H $LATEST_FEDORA_BRANCH --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body ''
+              git push origin "fedora-dist-git/$LATEST_FEDORA_BRANCH:refs/heads/$LATEST_FEDORA_BRANCH"
+              gh pr create -B "$GITHUB_REF_NAME" -H "$LATEST_FEDORA_BRANCH" --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body ''
               echo "Filed pull request, consider merging."
             fi
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
