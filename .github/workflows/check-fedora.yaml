@@ -27,8 +27,12 @@ jobs:
             if gh pr list -B $GITHUB_REF_NAME -H $LATEST_FEDORA_BRANCH | tee /dev/stderr | grep -q . ; then
               echo "There already seems a pull request dealing with these."
             else
-              git push origin fedora-dist-git/$LATEST_FEDORA_BRANCH:refs/heads/$LATEST_FEDORA_BRANCH
-              gh pr create -B $GITHUB_REF_NAME -H $LATEST_FEDORA_BRANCH --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body ''
+              git config user.name 'Jan Pazdziora'
+              git config user.email jan.pazdziora@code.adelton.com
+              git merge -m "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" fedora-dist-git/$LATEST_FEDORA_BRANCH
+              NEW_HEAD=$( git rev-parse --short HEAD )
+              git push origin HEAD:refs/heads/$LATEST_FEDORA_BRANCH-$NEW_HEAD
+              gh pr create -B $GITHUB_REF_NAME -H $LATEST_FEDORA_BRANCH-$NEW_HEAD --title "Merge remote-tracking branch 'fedora-dist-git/$LATEST_FEDORA_BRANCH' into $GITHUB_REF_NAME" --body ''
               echo "Filed pull request, consider merging."
             fi
           fi
