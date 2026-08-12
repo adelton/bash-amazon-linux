@@ -1,0 +1,77 @@
+name: Process /merge-ff pull request comment
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  merge-ff:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/merge-ff')
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.issue.number }}
+      RUN_ID_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Check that commenter has write permissions
+        run: |
+          permission="$( gh api "repos/$REPO/collaborators/$COMMENTER/permission" --jq .permission )"
+          echo "Permission for $COMMENTER: $permission"
+          if [ "$permission" != 'admin' ] && [ "$permission" != 'write' ] ; then
+            echo "::error::$COMMENTER does not have write permissions to this repo"
+            exit 1
+          fi
+        env:
+          COMMENTER: ${{ github.event.comment.user.login }}
+
+      - name: Retrieve PR info
+        id: pr-info
+        run: |
+          trap "gh api 'repos/$REPO/pulls/$PR_NUMBER'" ERR
+          read -r STATE HEAD_SHA BASE_SHA BASE_REF \
+            < <( gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '[ .state, .head.sha, .base.sha, .base.ref ] | join(" ")' )
+          if [ "$STATE" != 'open' ] ; then
+            echo "::error::Pull request is no longer open"
+            exit 1
+          fi
+          if [ -z "$HEAD_SHA" ] || [ -z "$BASE_SHA" ] || [ -z "$BASE_REF" ] ; then
+            echo "::error::Pull request does not seem to have .head.sha, .base.sha, or .base.ref"
+            exit 1
+          fi
+          echo "TARGET_HEAD_SHA=$HEAD_SHA" | tee -a "$GITHUB_ENV"
+          echo "BASE_SHA=$BASE_SHA" | tee -a "$GITHUB_ENV"
+          echo "BASE_REF=$BASE_REF" | tee -a "$GITHUB_ENV"
+        shell: bash -euo pipefail {0}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.BASE_REF }}
+
+      - name: Fetch the desired target commit and push
+        run: |
+          current_base_sha="$( git rev-parse "origin/$BASE_REF" )"
+          if [ "$BASE_SHA" != "$current_base_sha" ] ; then
+            echo "::error::Head of $BASE_REF changed since this pull request was created, currently $current_base_sha, was $BASE_SHA"
+            exit 1
+          fi
+
+          git fetch origin "$TARGET_HEAD_SHA"
+          git push origin "$TARGET_HEAD_SHA:refs/heads/$BASE_REF"
+          echo "Pushed this pull request to $BASE_REF"
+
+          gh issue comment "$PR_NUMBER" --body "$( printf '%s\n\n%s' "Fast-forward merged." "Sincerely, $RUN_ID_URL")"
+
+      - name: Comment on failure
+        if: failure()
+        run: |
+          gh issue comment "$PR_NUMBER" \
+            --repo "$REPO" \
+            --body "$( printf '%s\n\n%s' "Failed to fast-forward merge this pull request." "See $RUN_ID_URL for details.")"
+
